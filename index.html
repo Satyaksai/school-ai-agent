@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>School AI Agent</title>
+</head>
+<body>
+
+<h2>📚 School AI Homework & Doubt Solver</h2>
+
+<h3>Student Section</h3>
+
+<label>Enter Class (6-10):</label><br>
+<input id="class" type="number"><br><br>
+
+<label>Ask your question:</label><br>
+<input id="question" type="text" size="50"><br><br>
+
+<button onclick="ask()">Ask</button>
+
+<h3>Answer:</h3>
+<p id="result"></p>
+
+<hr>
+
+<h3>Teacher Section (Add Homework)</h3>
+
+<label>Class:</label><br>
+<input id="t_class" type="number"><br><br>
+
+<label>Subject:</label><br>
+<input id="subject" type="text"><br><br>
+
+<label>Homework:</label><br>
+<input id="content" type="text" size="50"><br><br>
+
+<button onclick="addHomework()">Add Homework</button>
+
+<p id="status"></p>
+
+<script>
+const BASE_URL = "http://127.0.0.1:8000";
+
+async function ask() {
+    const question = document.getElementById("question").value;
+    const student_class = parseInt(document.getElementById("class").value);
+
+    const res = await fetch(BASE_URL + "/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({question, student_class})
+    });
+
+    const data = await res.json();
+    document.getElementById("result").innerText = data.answer;
+}
+
+async function addHomework() {
+    const student_class = parseInt(document.getElementById("t_class").value);
+    const subject = document.getElementById("subject").value;
+    const content = document.getElementById("content").value;
+
+    console.log("Sending:", student_class, subject, content);
+
+    const res = await fetch(BASE_URL + "/add-homework", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({student_class, subject, content})
+    });
+
+    console.log("Raw response:", res);
+
+    const data = await res.json();
+
+    console.log("Parsed response:", data);
+
+    document.getElementById("status").innerText = data.message;
+}
+</script>
+
+</body>
+</html>
